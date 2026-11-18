@@ -1126,7 +1126,11 @@ def main() -> None:
     result = run_analysis(data_dir=data_dir)
     payload = build_dashboard_payload(result, datasets)
     dashboard = write_dashboard(payload)
+    pages_dashboard = write_dashboard(
+        payload, Path(__file__).resolve().parents[1] / "docs" / "index.html"
+    )
     print(f"Dashboard: {dashboard}")
+    print(f"GitHub Pages dashboard: {pages_dashboard}")
     print(
         f"Includes {payload['global']['matches']:,} matches, "
         f"{payload['global']['deliveries']:,} chase deliveries, "
@@ -1140,43 +1144,113 @@ _DASHBOARD_TEMPLATE = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101916">
+<meta name="theme-color" content="#fff7fa">
 <title>SupeRR Selector | Pressure Analytics</title>
 <style>
 :root{color-scheme:dark;--bg:#101916;--panel:#17231e;--panel2:#1d2b24;--line:#2c4035;--text:#eef4e9;--muted:#a9baaa;--lime:#c8f169;--mint:#65ddae;--orange:#ffb86b;--red:#ff8a7a;--blue:#8dc8ff;--shadow:0 12px 36px #07100c66}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 82% -15%,#354d3a 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}.shell{max-width:1440px;margin:auto;padding:28px 34px 60px}.masthead{display:flex;align-items:center;justify-content:space-between;gap:22px;border-bottom:1px solid var(--line);padding-bottom:25px}.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:44px;height:44px;border-radius:14px;background:var(--lime);color:#152018;display:grid;place-items:center;font-weight:950;font-size:19px;box-shadow:0 0 34px #c8f16944}.eyebrow{text-transform:uppercase;letter-spacing:.16em;color:var(--mint);font-size:11px;font-weight:800}.brand h1{font-size:19px;line-height:1.2;margin:3px 0 0}.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pill{border:1px solid var(--line);background:#101a15aa;padding:8px 12px;border-radius:999px;color:var(--muted);font-size:12px}.hero{padding:32px 0 23px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px}.hero h2{font-size:clamp(28px,4vw,47px);letter-spacing:-.04em;line-height:1.06;margin:8px 0 10px;max-width:820px}.hero p{color:var(--muted);max-width:760px;margin:0}.hero-callout{padding:15px 19px;background:linear-gradient(135deg,#26372b,#1b2a23);border:1px solid var(--line);border-radius:16px;min-width:220px}.hero-callout strong{display:block;color:var(--lime);font-size:19px}.hero-callout span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:8px;overflow:auto;border-bottom:1px solid var(--line);margin:9px 0 22px}.nav button{white-space:nowrap;border:0;border-bottom:2px solid transparent;padding:12px 15px;background:none;color:var(--muted);font-weight:750}.nav button.active{border-color:var(--lime);color:var(--lime)}.view{display:none}.view.active{display:block}.grid{display:grid;gap:16px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:linear-gradient(145deg,#19251f,#152019);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.kpi-label{color:var(--muted);font-size:12px;font-weight:700}.kpi-value{font-size:32px;font-weight:850;letter-spacing:-.04em;margin:4px 0}.kpi-note{font-size:12px;color:#90a194}.two-col{grid-template-columns:repeat(2,minmax(0,1fr));margin:16px 0}.three-col{grid-template-columns:repeat(3,minmax(0,1fr))}.card h3{margin:0 0 4px;font-size:16px}.sub{color:var(--muted);font-size:12px;margin:0 0 17px}.bar-list{display:grid;gap:11px}.bar-row{display:grid;grid-template-columns:minmax(90px,145px) 1fr 72px;gap:11px;align-items:center;font-size:12px}.bar-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#dce7da}.bar-track{height:10px;background:#29392e;border-radius:20px;overflow:hidden}.bar-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--mint),var(--lime));min-width:2px}.bar-fill.orange{background:linear-gradient(90deg,#ff9e59,#ffe080)}.bar-value{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}.chart-legend{display:flex;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin:10px 0}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.scatter-wrap{width:100%;overflow:hidden}.scatter-wrap svg{display:block;width:100%;height:auto}.scatter-label{fill:#9eb0a1;font-size:11px}.scatter-grid{stroke:#314338;stroke-width:1}.scatter-diagonal{stroke:#829688;stroke-dasharray:5 5;opacity:.7}.point{stroke:#142019;stroke-width:1.5}.point.top{stroke:#fff;stroke-width:2}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:15px}.toolbar input,.toolbar select{background:#121c16;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;outline:none}.toolbar input{min-width:210px;flex:1}.toolbar select{min-width:135px}.button{border:1px solid var(--line);border-radius:10px;padding:9px 13px;background:#25342a;color:var(--text);font-weight:700;text-decoration:none}.button:hover{border-color:var(--lime);color:var(--lime)}.table-wrap{overflow:auto;max-height:650px;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:800px}th,td{padding:10px 12px;text-align:right;border-bottom:1px solid #293a30;white-space:nowrap;font-variant-numeric:tabular-nums}th{position:sticky;top:0;background:#202e25;color:#cad7c9;font-size:11px;text-transform:uppercase;letter-spacing:.07em;cursor:pointer;z-index:1}td{font-size:12px;color:#e2ebdf}td:first-child,th:first-child{text-align:left}td.name,th.name{text-align:left}tbody tr:hover{background:#25362b}.rank{color:var(--lime);font-weight:850}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#263a2d;color:var(--mint);font-size:10px;font-weight:800}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:8px 0 16px}.section-head h2{margin:0;font-size:24px}.method{max-width:900px}.method h3{margin-top:24px;color:var(--lime)}.method p,.method li{color:#c4d1c4}.method code{color:var(--mint);background:#142019;padding:2px 5px;border-radius:5px}.quality-list{display:grid;gap:10px}.quality-item{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;border-bottom:1px solid var(--line);padding:10px 0}.quality-item span{color:var(--muted)}.quality-item strong{color:var(--orange);text-align:right}.file-list{display:grid;gap:8px}.file-link{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text);border:1px solid var(--line);background:#121c16;border-radius:10px;padding:11px 13px}.file-link:hover{border-color:var(--lime)}.empty{color:var(--muted);padding:24px;text-align:center}.table-caption{color:var(--muted);font-size:12px;margin:8px 0 12px}.footer{border-top:1px solid var(--line);margin-top:35px;padding-top:16px;color:#839487;font-size:11px;display:flex;justify-content:space-between;gap:15px}.alert{padding:12px 14px;border:1px solid #674b30;background:#35291d;color:#ffd9a8;border-radius:12px;font-size:12px;margin-bottom:14px}.profile-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}.profile-hero h2{margin:5px 0;font-size:30px}.profile-meta{color:var(--muted);font-size:13px}.profile-kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin:15px 0}.role-card{min-height:180px}.role-card .kpi-value{font-size:26px}.profile-selector{min-width:min(420px,100%);flex:1}.profile-selector select{width:100%;min-width:240px}.profile-block-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.profile-block-title h3{margin:0}.pressure-positive{color:var(--lime)}.pressure-negative{color:var(--orange)}.record-result{max-width:220px;overflow:hidden;text-overflow:ellipsis;text-align:left!important}.profile-note{font-size:12px;color:var(--muted);line-height:1.55}.player-search{max-width:340px}
 @media(max-width:900px){.shell{padding:20px 18px 40px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr}.hero-callout{max-width:280px}.three-col{grid-template-columns:1fr}}@media(max-width:620px){.two-col{grid-template-columns:1fr}.header-right{display:none}.shell{padding:15px 12px 30px}.kpi-value{font-size:25px}.card{padding:15px}.bar-row{grid-template-columns:90px 1fr 62px;gap:7px}.footer{display:block}.toolbar input{min-width:100%}}
 @media(max-width:900px){.profile-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.profile-kpis{grid-template-columns:1fr 1fr}.profile-hero h2{font-size:24px}}
+:root{color-scheme:light;--bg:#fff7fa;--panel:#fff;--panel2:#fff0f5;--line:#f0d9e2;--text:#242438;--muted:#77778a;--pink:#d81b60;--pink-dark:#a8164c;--pink-soft:#fde5ee;--navy:#283858;--mint:#bf1854;--orange:#283858;--red:#b21c50;--blue:#8a96a8;--slate:#8a96a8;--lime:#d81b60;--shadow:0 12px 32px #702c4711}
+body{background:radial-gradient(ellipse at 86% -10%,#fce2eb 0,transparent 37%),var(--bg);color:var(--text)}
+.shell{max-width:1480px;padding-top:24px}
+.masthead{border-color:var(--line);padding-bottom:18px}
+.brand-mark{background:linear-gradient(145deg,#ee2c72,#c91453);color:#fff;border-radius:15px;box-shadow:0 8px 20px #d81b602c}
+.eyebrow{color:var(--pink-dark);letter-spacing:.13em}
+.brand h1{font-size:18px;letter-spacing:-.02em}
+.pill{border-color:var(--line);background:#fff;color:var(--muted)}
+.hero{padding:34px 0 25px;align-items:center}
+.hero h2{font-size:clamp(30px,4vw,48px);letter-spacing:-.045em;max-width:780px}
+.hero p{color:var(--muted);max-width:720px}
+.overview-filter{display:grid;gap:6px;min-width:190px;color:var(--muted);font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.08em}
+.overview-filter select{width:100%;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 13px;color:var(--text);font:inherit;text-transform:none;letter-spacing:normal}
+.nav{border-color:var(--line);margin:7px 0 22px}
+.nav button{color:var(--muted);transition:color .16s ease,border-color .16s ease}
+.nav button.active{border-color:var(--pink);color:var(--pink-dark)}
+.nav button:hover{color:var(--pink-dark)}
+.section-head{margin:8px 0 16px}
+.section-head h2{font-size:25px;letter-spacing:-.025em}
+.card{background:var(--panel);border-color:var(--line);box-shadow:var(--shadow);border-radius:17px}
+.card h3{color:var(--text);letter-spacing:-.01em}
+.sub,.profile-note,.table-caption{color:var(--muted)}
+.kpi-label{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:10px}
+.kpi-value{color:var(--pink-dark);font-variant-numeric:tabular-nums}
+.kpi-note{color:var(--muted)}
+.kpis .card{position:relative;overflow:hidden;padding-left:22px}
+.kpis .card:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(var(--pink),#f7a4c0)}
+.bar-list{gap:12px}
+.bar-row{grid-template-columns:minmax(105px,155px) 1fr 66px;gap:12px;font-size:12px}
+.bar-name{color:#38384b;font-weight:650}
+.bar-track{height:9px;background:#f3e8ec}
+.bar-fill{background:linear-gradient(90deg,#ef5a8b,var(--pink));min-width:3px}
+.bar-fill.orange{background:linear-gradient(90deg,#526488,var(--navy))}
+.bar-value{color:#55556a;font-weight:700}
+.chart-legend{color:var(--muted)}
+.scatter-grid{stroke:#eee4e8}
+.scatter-diagonal{stroke:#98a0ac;stroke-dasharray:4 5;opacity:.8}
+.scatter-label{fill:#747486}
+.point{stroke:#fff;stroke-width:1.5}
+.point.top{stroke:#fff;stroke-width:2}
+.toolbar input,.toolbar select,.profile-selector{background:#fff;border:1px solid var(--line);color:var(--text);border-radius:10px}
+.toolbar input:focus,.toolbar select:focus,.overview-filter select:focus{outline:3px solid #d81b6021;border-color:var(--pink)}
+.button{border:1px solid var(--pink);background:var(--pink);color:#fff;transition:background .16s ease,transform .16s ease}
+.button:hover{background:var(--pink-dark);border-color:var(--pink-dark);color:#fff;transform:translateY(-1px)}
+.table-wrap{border-color:var(--line);background:#fff}
+table{min-width:760px}
+th,td{border-bottom-color:#f0e5e9}
+th{background:#fff0f5;color:#6b3b50}
+td{color:#37374a}
+tbody tr:hover{background:#fff7fa}
+.rank{color:var(--pink-dark)}
+.badge{background:var(--pink-soft);color:var(--pink-dark)}
+.profile-meta{color:var(--muted)}
+.profile-block-title{margin-bottom:10px}
+.profile-hero{border-top:3px solid var(--pink)}
+.role-card{min-height:160px}
+.quality-item{border-color:var(--line)}
+.quality-item span{color:var(--muted)}
+.quality-item strong{color:var(--pink-dark)}
+.empty{color:var(--muted)}
+.footer{border-color:var(--line);color:var(--muted)}
+.season-chart{width:100%;overflow-x:auto}
+.season-chart svg{display:block;width:100%;min-width:420px;height:auto}
+.season-grid{stroke:#eee4e8;stroke-width:1}
+.season-axis{fill:#767689;font-size:11px}
+.season-bar{fill:var(--pink)}
+.season-bar.navy{fill:var(--navy)}
+.season-value{fill:#525267;font-size:10px;font-weight:700}
+@media(max-width:700px){.hero{align-items:stretch;gap:17px}.overview-filter{max-width:100%}.section-head{align-items:flex-start}.bar-row{grid-template-columns:minmax(92px,120px) 1fr 54px}.kpis .card{padding:15px 14px 15px 18px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
 <main class="shell">
   <header class="masthead">
-    <div class="brand"><div class="brand-mark">SR</div><div><div class="eyebrow">SupeRR Selector · Season 2</div><h1>Pressure Analytics</h1></div></div>
-    <div class="header-right"><span class="pill">IPL + T20I</span><span class="pill" id="updated"></span></div>
+    <div class="brand"><div class="brand-mark">RR</div><div><div class="eyebrow">IPL · T20I · PLAYER INSIGHTS</div><h1>Pressure Analytics</h1></div></div>
+    <div class="header-right"><span class="pill">SupeRR Selector · Season 2</span></div>
   </header>
   <section class="hero">
-    <div><div class="eyebrow">Phase 2 · Decision support</div><h2>Who performs when the chase gets tight?</h2><p>Explore pressure performance against each player's own baseline, inspect the evidence behind the rankings, and download the complete analysis.</p></div>
-    <div class="hero-callout"><strong>Pressure ≠ reputation</strong><span>Rankings are derived from supplied ball-by-ball records and explicit eligibility rules.</span></div>
+    <div><div class="eyebrow">PLAYER PERFORMANCE INTELLIGENCE</div><h2>Pressure performance, made visible.</h2><p>Explore clutch batting, bowling impact, and every player’s match-by-match journey.</p></div>
+    <label class="overview-filter">Competition scope<select id="overview-format" aria-label="Filter overview by competition"><option value="All">All competitions</option></select></label>
   </section>
   <nav class="nav" aria-label="Dashboard sections">
     <button class="active" data-view="overview">Overview</button>
     <button data-view="batters">Batters</button>
     <button data-view="bowlers">Bowlers</button>
-    <button data-view="players">Player explorer</button>
-    <button data-view="quality">Data &amp; methodology</button>
+    <button data-view="players">Player profiles</button>
   </nav>
   <section class="view active" id="overview">
+    <div class="section-head"><div><div class="eyebrow">LIVE PERFORMANCE SNAPSHOT</div><h2>Overview</h2></div></div>
     <div class="grid kpis" id="kpis"></div>
     <div class="grid two-col">
       <article class="card"><h3>Top pressure batters</h3><p class="sub">Reliability-adjusted strike-rate improvement vs. personal baseline</p><div class="bar-list" id="batter-bars"></div></article>
       <article class="card"><h3>Top pressure bowlers</h3><p class="sub">Equal-weight standardized economy and wicket-rate improvement</p><div class="bar-list" id="bowler-bars"></div></article>
     </div>
     <div class="grid two-col">
-      <article class="card"><h3>Batter: pressure vs. baseline</h3><p class="sub">Each point is an eligible player; below the diagonal means a higher pressure strike rate.</p><div class="chart-legend"><span><i class="dot" style="background:var(--lime)"></i>Top 10</span><span><i class="dot" style="background:var(--blue)"></i>Other eligible players</span></div><div class="scatter-wrap" id="batter-scatter"></div></article>
-      <article class="card"><h3>Bowler: pressure vs. baseline</h3><p class="sub">Above the diagonal means lower pressure economy; lower is better.</p><div class="chart-legend"><span><i class="dot" style="background:var(--orange)"></i>Top 10</span><span><i class="dot" style="background:var(--blue)"></i>Other eligible players</span></div><div class="scatter-wrap" id="bowler-scatter"></div></article>
+      <article class="card"><h3>Batter impact · pressure vs baseline</h3><p class="sub">Players below the diagonal score faster in pressure chases than against their own baseline.</p><div class="chart-legend"><span><i class="dot" style="background:var(--pink)"></i>Top 10</span><span><i class="dot" style="background:var(--slate)"></i>Other eligible players</span></div><div class="scatter-wrap" id="batter-scatter"></div></article>
+      <article class="card"><h3>Bowling control · pressure vs baseline</h3><p class="sub">Players below the diagonal concede fewer runs per over in pressure situations.</p><div class="chart-legend"><span><i class="dot" style="background:var(--navy)"></i>Top 10</span><span><i class="dot" style="background:var(--slate)"></i>Other eligible players</span></div><div class="scatter-wrap" id="bowler-scatter"></div></article>
     </div>
-    <article class="card"><h3>Where pressure appears in the chase</h3><p class="sub">Share of modeled delivery states labelled pressure in each phase (early &lt;30%, middle 30–75%, late ≥75% of innings balls used).</p><div class="toolbar"><select id="phase-format"><option value="All">All formats</option></select></div><div class="grid two-col"><div><div class="eyebrow">Batting pressure</div><div class="bar-list" id="phase-bat"></div></div><div><div class="eyebrow">Bowling pressure</div><div class="bar-list" id="phase-bowl"></div></div></div></article>
+    <article class="card"><h3>Pressure profile across the chase</h3><p class="sub">Share of delivery states classified as pressure in each innings phase.</p><div class="grid two-col"><div><div class="eyebrow">Batting pressure</div><div class="bar-list" id="phase-bat"></div></div><div><div class="eyebrow">Bowling pressure</div><div class="bar-list" id="phase-bowl"></div></div></div></article>
   </section>
   <section class="view" id="batters">
     <div class="section-head"><div><div class="eyebrow">Scoring under pressure</div><h2>Batter leaderboard</h2></div><span class="badge" id="batter-count"></span></div>
@@ -1184,7 +1258,7 @@ _DASHBOARD_TEMPLATE = r"""<!doctype html>
       <article class="card"><h3>Pressure strike rate by player</h3><p class="sub">Top 10 for the selected format.</p><div class="bar-list" id="batter-format-bars"></div></article>
       <article class="card"><h3>Personal baseline comparison</h3><p class="sub">Pressure and baseline strike rate for the selected format.</p><div class="scatter-wrap" id="batter-format-scatter"></div></article>
     </div>
-    <div class="toolbar"><select id="batter-format"></select><input id="batter-search" type="search" placeholder="Search batter name"><button class="button" id="download-batters">Download filtered CSV</button></div>
+    <div class="toolbar"><select id="batter-format" aria-label="Filter batters by format"></select><input id="batter-search" type="search" placeholder="Search batter name" aria-label="Search batter name"></div>
     <p class="table-caption">Click a column heading to sort. Eligibility requires 60 pressure balls, 120 baseline balls, and 3 pressure matches.</p><div class="table-wrap" id="batter-table"></div>
   </section>
   <section class="view" id="bowlers">
@@ -1193,42 +1267,20 @@ _DASHBOARD_TEMPLATE = r"""<!doctype html>
       <article class="card"><h3>Pressure economy improvement</h3><p class="sub">Positive values indicate lower economy than the player's baseline.</p><div class="bar-list" id="bowler-format-bars"></div></article>
       <article class="card"><h3>Pressure economy by player</h3><p class="sub">Above the diagonal is lower pressure economy (better); top 10 are highlighted.</p><div class="scatter-wrap" id="bowler-format-scatter"></div></article>
     </div>
-    <div class="toolbar"><select id="bowler-format"></select><input id="bowler-search" type="search" placeholder="Search bowler name"><button class="button" id="download-bowlers">Download filtered CSV</button></div>
+    <div class="toolbar"><select id="bowler-format" aria-label="Filter bowlers by format"></select><input id="bowler-search" type="search" placeholder="Search bowler name" aria-label="Search bowler name"></div>
     <p class="table-caption">Bowling score averages two cohort-standardized, sample-size-shrunk improvements.</p><div class="table-wrap" id="bowler-table"></div>
   </section>
   <section class="view" id="players">
-    <div class="section-head"><div><div class="eyebrow">Every player in the supplied IPL + T20I records</div><h2>Player explorer</h2></div><span class="badge" id="player-count"></span></div>
+    <div class="section-head"><div><div class="eyebrow">CAREER · PRESSURE · MATCH HISTORY</div><h2>Player profiles</h2></div><span class="badge" id="player-count"></span></div>
     <div class="toolbar">
       <input id="player-search" class="player-search" type="search" list="player-options" placeholder="Search any player name or ID">
       <datalist id="player-options"></datalist>
       <select id="player-select" class="profile-selector" aria-label="Select a player"></select>
       <select id="player-format" aria-label="Filter player match records"><option value="All">All formats</option></select>
-      <button class="button" id="download-player-records">Download match records</button>
-      <button class="button" id="download-player-profile">Download player profile JSON</button>
     </div>
-    <div id="player-profile"><div class="card empty">Select a player to inspect career stats, pressure performance, team contribution, and match-by-match records.</div></div>
+    <div id="player-profile"><div class="card empty">Search for a player to explore career stats, pressure performance, seasonal trends, and match records.</div></div>
   </section>
-  <section class="view" id="quality">
-    <div class="section-head"><div><div class="eyebrow">Trust, traceability, caveats</div><h2>Data &amp; methodology</h2></div></div>
-    <div class="grid two-col">
-      <article class="card"><h3>Dataset inventory</h3><p class="sub">Source CSVs read during the analysis; originals are not modified.</p><div class="quality-list" id="dataset-list"></div></article>
-      <article class="card"><h3>Join integrity</h3><p class="sub">Unmatched key counts are checks, not silent row deletions.</p><div class="quality-list" id="relationship-list"></div></article>
-    </div>
-    <div class="grid two-col">
-      <article class="card"><h3>Analysis coverage</h3><div class="quality-list" id="diagnostic-list"></div></article>
-      <article class="card"><h3>Reports &amp; data downloads</h3><p class="sub">The dashboard works offline; links below open or download the generated files.</p><div class="file-list" id="file-list"></div></article>
-    </div>
-    <article class="card method" style="margin-top:16px"><h3>How to read the rankings</h3>
-      <p><b>Pressure context.</b> Only live second-innings chases are modeled. Separate batting and bowling pressure indices combine required-run-rate percentile, wickets lost, and innings progress; the highest quartile in each format is labelled pressure.</p>
-      <p><b>Batters.</b> Strike rate under pressure is compared with the same player's non-pressure chase baseline in each format. The adjusted change is shrunk toward zero for smaller pressure samples.</p>
-      <p><b>Bowlers.</b> Economy and credited wickets are measured per legal ball, with byes, legbyes, and penalty extras excluded from bowler-conceded runs. Rankings equally weight standardized, shrunk economy improvement and wicket-rate improvement.</p>
-      <p><b>Eligibility.</b> At least 60 pressure balls, 120 baseline balls, and 3 pressure matches with a usable same-format baseline. Top-10 confidence intervals bootstrap pressure matches, holding the baseline fixed.</p>
-      <h3>Important limitations</h3>
-      <ul><li>This is a chase-only model; first-innings pressure, venue, pitch, opposition strength, and win-probability context are not modeled.</li><li>Pressure cutoffs are cohort-relative. The 75th-percentile cutoff, index weights, and exposure thresholds are explicit modeling choices.</li><li>Delivery legality and revised innings length are inferred from the CSV labels. Source rows after target completion or innings quota are excluded from state modeling but are preserved in the files.</li><li>Bootstrap intervals do not include baseline or threshold uncertainty; this is descriptive analysis, not a causal or future-performance claim.</li></ul>
-      <h3>Regenerate</h3><p>From the project directory run <code>python src/dashboard.py</code>. This rebuilds the ranking CSVs, methodology report, and this standalone dashboard. Open <code>reports/dashboard.html</code> in a browser; no server or external libraries are required.</p>
-    </article>
-  </section>
-  <footer class="footer"><span>SupeRR Selector · Season 2 · Analytics workbench</span><span id="footer-source"></span></footer>
+  <footer class="footer"><span>SupeRR Selector · Season 2</span><span>IPL + T20I · Player performance analytics</span></footer>
 </main>
 <script id="dashboard-data" type="application/json">__DASHBOARD_DATA__</script>
 <script>
@@ -1259,16 +1311,26 @@ function makeKpi(label,value,note){
  card.append(a,b,c);return card
 }
 function renderKpis(){
- const d=DATA.diagnostics;
+ const format=selectedFormat("overview-format");
+ const scoped=format==="All"?DATA.global:(DATA.formats[format]||{});
+ const batters=rankings("batters",format),bowlers=rankings("bowlers",format);
  const items=[
-  ["Eligible chases",fmt(d.eligible_chase_matches,0),"Winner + target verified"],
-  ["Modeled delivery states",fmt(DATA.global.deliveries,0),"After target / innings end"],
-  ["Eligible batters",fmt(DATA.global.batters.length,0),"Minimum exposure applied"],
-  ["Eligible bowlers",fmt(DATA.global.bowlers.length,0),"Minimum exposure applied"]
+  ["Matches analyzed",fmt(scoped.matches,0),format==="All"?"Across IPL + T20I":format==="T20"?"IPL seasons":"International T20"],
+  ["Chase deliveries",fmt(scoped.deliveries,0),"Delivery-level performance states"],
+  ["Ranked batters",fmt(batters.length,0),"Eligible pressure performers"],
+  ["Ranked bowlers",fmt(bowlers.length,0),"Eligible pressure performers"]
  ];
  $("kpis").replaceChildren(...items.map(([a,b,c])=>makeKpi(a,b,c)));
- $("updated").textContent=`Generated ${new Date(DATA.generated_at).toLocaleString()}`;
- $("footer-source").textContent=`${fmt(DATA.global.matches,0)} matches · ${fmt(DATA.global.deliveries,0)} deliveries`;
+}
+function renderOverview(format=selectedFormat("overview-format")){
+ renderKpis();
+ const batterTop=topRankings("batters",format),bowlerTop=topRankings("bowlers",format);
+ const batters=rankings("batters",format),bowlers=rankings("bowlers",format);
+ renderBars("batter-bars",batterTop.slice(0,10),"player_name","reliability_adjusted_score");
+ renderBars("bowler-bars",bowlerTop.slice(0,10),"player_name","bowling_score","orange");
+ renderScatter("batter-scatter",batters,"pressure_strike_rate","baseline_strike_rate",batterTop);
+ renderScatter("bowler-scatter",bowlers,"pressure_economy","baseline_economy",bowlerTop,true);
+ renderPhase(format);
 }
 function renderBars(containerId,rows,labelKey,valueKey,color=""){
  const container=$(containerId);container.replaceChildren();
@@ -1307,7 +1369,7 @@ function renderScatter(containerId,rows,xKey,yKey,topRows,reverse=false){
  const tops=new Set(topRows.map(r=>String(r.player_id)));
  for(const row of rows){
   const xv=Number(row[xKey]),yv=Number(row[yKey]);if(!Number.isFinite(xv)||!Number.isFinite(yv))continue;
-  const point=document.createElementNS(svg.namespaceURI,"circle");point.setAttribute("cx",x(xv));point.setAttribute("cy",y(yv));point.setAttribute("r",tops.has(String(row.player_id))?"5":"3.5");point.setAttribute("class",`point${tops.has(String(row.player_id))?" top":""}`);point.setAttribute("fill",tops.has(String(row.player_id))?(reverse?"#ffb86b":"#c8f169"):"#8dc8ff");
+  const point=document.createElementNS(svg.namespaceURI,"circle");point.setAttribute("cx",x(xv));point.setAttribute("cy",y(yv));point.setAttribute("r",tops.has(String(row.player_id))?"5":"3.5");point.setAttribute("class",`point${tops.has(String(row.player_id))?" top":""}`);point.setAttribute("fill",tops.has(String(row.player_id))?(reverse?"#283858":"#d81b60"):"#8a96a8");
   const title=document.createElementNS(svg.namespaceURI,"title");title.textContent=`${row.player_name}: pressure ${fmt(row[xKey],1)}, baseline ${fmt(row[yKey],1)}`;point.append(title);svg.append(point)
  }
  const xLabel=document.createElementNS(svg.namespaceURI,"text");xLabel.setAttribute("x",(pad.left+width-pad.right)/2);xLabel.setAttribute("y",height-9);xLabel.setAttribute("text-anchor","middle");xLabel.setAttribute("class","scatter-label");xLabel.textContent=reverse?"Pressure economy (lower is better)":"Pressure strike rate";svg.append(xLabel);
@@ -1336,22 +1398,16 @@ function renderBatter(format=selectedFormat("batter-format")){
  $("batter-count").textContent=`${fmt(rows.length,0)} eligible`;
  renderBars("batter-format-bars",top.slice(0,10),"player_name","pressure_strike_rate");
  renderScatter("batter-format-scatter",rows,"pressure_strike_rate","baseline_strike_rate",top);
- const filtered=table("batter-table",rows,BAT_COLUMNS,"batter",$("batter-search").value);
- $("download-batters").onclick=()=>downloadCsv(filtered,BAT_COLUMNS,"batter_leaderboard.csv")
+ table("batter-table",rows,BAT_COLUMNS,"batter",$("batter-search").value);
 }
 function renderBowler(format=selectedFormat("bowler-format")){
  const rows=rankings("bowlers",format),top=topRankings("bowlers",format);
  $("bowler-count").textContent=`${fmt(rows.length,0)} eligible`;
  renderBars("bowler-format-bars",top.slice(0,10),"player_name","economy_improvement","orange");
  renderScatter("bowler-format-scatter",rows,"pressure_economy","baseline_economy",top,true);
- const filtered=table("bowler-table",rows,BOWL_COLUMNS,"bowler",$("bowler-search").value);
- $("download-bowlers").onclick=()=>downloadCsv(filtered,BOWL_COLUMNS,"bowler_leaderboard.csv")
+ table("bowler-table",rows,BOWL_COLUMNS,"bowler",$("bowler-search").value);
 }
-function downloadCsv(rows,columns,filename){
- const csv=[columns.map(([,label])=>label).join(","),...rows.map(row=>columns.map(([key])=>{const value=key==="pressure_match_consistency"&&row[key]!=null?Number(row[key]).toFixed(4):row[key];return `"${String(value??"").replace(/"/g,'""')}"`}).join(","))].join("\r\n");
- const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));link.download=filename;link.click();URL.revokeObjectURL(link.href)
-}
-function renderPhase(format=selectedFormat("phase-format")){
+function renderPhase(format=selectedFormat("overview-format")){
  const phases=["Early","Middle","Late"],formats=format==="All"?Object.keys(DATA.pressure_by_phase):[format];
  const results=phases.map(phase=>{const groups=formats.map(name=>DATA.pressure_by_phase[name]?.[phase]).filter(Boolean);if(!groups.length)return null;const count=groups.reduce((a,g)=>a+g.deliveries,0);return {phase,bat:groups.reduce((a,g)=>a+g.batting_pressure_deliveries,0)/count,bowl:groups.reduce((a,g)=>a+g.bowling_pressure_deliveries,0)/count}}).filter(Boolean);
  renderBars("phase-bat",results.map(r=>({name:r.phase,value:r.bat})),"name","value");
@@ -1393,6 +1449,38 @@ function makeProfileCard(title,description,metrics){
 }
 function profileTableColumns(rows,columns,containerId){
  buildProfileTable(containerId,rows,columns)
+}
+function renderSeasonChart(containerId,seasons,metric,formatName,colorClass=""){
+ const root=$(containerId);root.replaceChildren();root.className="season-chart";
+ const values=seasons.map(row=>({
+  label:`${row.season} · ${formatName(row.format)}`,
+  value:Number(row[metric]||0)
+ })).filter(row=>Number.isFinite(row.value));
+ if(!values.length){root.className="season-chart empty";root.textContent="No seasonal records available.";return}
+ const width=Math.max(440,values.length*76),height=250,pad={left:48,right:14,top:18,bottom:72};
+ const chartWidth=width-pad.left-pad.right,chartHeight=height-pad.top-pad.bottom;
+ const max=Math.max(...values.map(row=>row.value),1),tick=Math.max(1,Math.ceil(max/4));
+ const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+ svg.setAttribute("viewBox",`0 0 ${width} ${height}`);svg.setAttribute("role","img");
+ svg.setAttribute("aria-label",`${metric} by season and format`);
+ for(let i=0;i<=4;i++){
+  const value=tick*i,y=pad.top+chartHeight-(value/max)*chartHeight;
+  const line=document.createElementNS(svg.namespaceURI,"line");
+  line.setAttribute("x1",pad.left);line.setAttribute("x2",width-pad.right);line.setAttribute("y1",y);line.setAttribute("y2",y);line.setAttribute("class","season-grid");svg.append(line);
+  const label=document.createElementNS(svg.namespaceURI,"text");
+  label.setAttribute("x",pad.left-8);label.setAttribute("y",y+4);label.setAttribute("text-anchor","end");label.setAttribute("class","season-axis");label.textContent=fmt(value,0);svg.append(label)
+ }
+ const slot=chartWidth/values.length,barWidth=Math.min(36,slot*.55),baseline=pad.top+chartHeight;
+ values.forEach((item,index)=>{
+  const x=pad.left+slot*index+(slot-barWidth)/2;
+  const barHeight=(item.value/max)*chartHeight;
+  const bar=document.createElementNS(svg.namespaceURI,"rect");
+  bar.setAttribute("x",x);bar.setAttribute("y",baseline-barHeight);bar.setAttribute("width",barWidth);bar.setAttribute("height",Math.max(1,barHeight));bar.setAttribute("rx","5");bar.setAttribute("class",`season-bar ${colorClass}`);
+  const title=document.createElementNS(svg.namespaceURI,"title");title.textContent=`${item.label}: ${fmt(item.value,0)}`;bar.append(title);svg.append(bar);
+  const label=document.createElementNS(svg.namespaceURI,"text");
+  label.setAttribute("transform",`translate(${x+barWidth/2} ${baseline+12}) rotate(-38)`);label.setAttribute("text-anchor","end");label.setAttribute("class","season-axis");label.textContent=item.label;svg.append(label)
+ });
+ root.append(svg)
 }
 function renderPlayerProfile(){
  const player=profilePlayers.find(item=>String(item.player_id)===$("player-select").value);
@@ -1442,6 +1530,20 @@ function renderPlayerProfile(){
  );
  root.append(roles);
 
+ const trendGrid=document.createElement("div");trendGrid.className="grid two-col season-trends";
+ const runsCard=document.createElement("article");runsCard.className="card";
+ const runsTitle=document.createElement("h3");runsTitle.textContent="Runs by season";
+ const runsNote=document.createElement("p");runsNote.className="sub";runsNote.textContent="Recorded batting runs, grouped by season and competition format.";
+ const runsChart=document.createElement("div");runsChart.id="player-runs-trend";runsCard.append(runsTitle,runsNote,runsChart);
+ const wicketsCard=document.createElement("article");wicketsCard.className="card";
+ const wicketsTitle=document.createElement("h3");wicketsTitle.textContent="Wickets by season";
+ const wicketsNote=document.createElement("p");wicketsNote.className="sub";wicketsNote.textContent="Credited bowling wickets, grouped by season and competition format.";
+ const wicketsChart=document.createElement("div");wicketsChart.id="player-wickets-trend";wicketsCard.append(wicketsTitle,wicketsNote,wicketsChart);
+ trendGrid.append(runsCard,wicketsCard);root.append(trendGrid);
+ const formatName=format=>format==="T20"?"IPL":format;
+ renderSeasonChart("player-runs-trend",player.seasons,"runs",formatName);
+ renderSeasonChart("player-wickets-trend",player.seasons,"wickets",formatName,"navy");
+
  const seasonCard=document.createElement("article");seasonCard.className="card";
  const seasonHead=document.createElement("div");seasonHead.className="profile-block-title";
  const seasonTitle=document.createElement("h3");seasonTitle.textContent="Season and format records";
@@ -1488,19 +1590,6 @@ function populatePlayerSelector(query=""){
  $("player-count").textContent=`${fmt(profilePlayers.length,0)} players · ${fmt(filtered.length,0)} matches search`;
  $("player-options").replaceChildren(...filtered.slice(0,200).map(player=>{const option=document.createElement("option");option.value=player.player_name;option.label=`ID ${player.player_id} · ${player.matches} matches`;return option}));
 }
-function downloadObject(data,filename,mime){
- const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([data],{type:mime}));link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000)
-}
-function exportPlayerRecords(){
- const columns=[
-  ["date","date"],["match_id","match_id"],["format","format"],["season","season"],["competition","competition"],["team","team"],["opponent","opponent"],["won","won"],["result","result"],
-  ["batting_runs","batting_runs"],["batting_balls","batting_balls"],["batting_strike_rate","batting_strike_rate"],["fours","fours"],["sixes","sixes"],["dismissals","dismissals"],["batting_run_contribution","batting_run_contribution"],
-  ["pressure_batting_runs","pressure_batting_runs"],["pressure_batting_balls","pressure_batting_balls"],["pressure_batting_strike_rate","pressure_batting_strike_rate"],["pressure_batting_run_share","pressure_batting_run_share"],
-  ["bowling_legal_balls","bowling_legal_balls"],["bowling_conceded","bowling_conceded"],["bowling_wickets","bowling_wickets"],["bowling_economy","bowling_economy"],
-  ["pressure_bowling_balls","pressure_bowling_balls"],["pressure_bowling_conceded","pressure_bowling_conceded"],["pressure_bowling_wickets","pressure_bowling_wickets"],["pressure_bowling_economy","pressure_bowling_economy"],["pressure_wicket_share","pressure_wicket_share"]
- ];
- downloadCsv(visiblePlayerRecords,columns,`player_${$("player-select").value}_match_records.csv`)
-}
 function initPlayerExplorer(){
  fillFormatSelect($("player-format"));
  populatePlayerSelector();
@@ -1508,48 +1597,14 @@ function initPlayerExplorer(){
  $("player-search").addEventListener("change",()=>{populatePlayerSelector($("player-search").value);renderPlayerProfile()});
  $("player-select").addEventListener("change",()=>{const player=profilePlayers.find(item=>String(item.player_id)===$("player-select").value);if(player)$("player-search").value=player.player_name;renderPlayerProfile()});
  $("player-format").addEventListener("change",()=>renderPlayerMatches());
- $("download-player-records").addEventListener("click",exportPlayerRecords);
- $("download-player-profile").addEventListener("click",()=>{const player=profilePlayers.find(item=>String(item.player_id)===$("player-select").value);if(player)downloadObject(JSON.stringify(player,null,2),`player_${player.player_id}_profile.json`,"application/json")});
  renderPlayerProfile()
 }
-function addQuality(){
- const datasetList=$("dataset-list");
- for(const [name,item] of Object.entries(DATA.datasets)){const line=document.createElement("div");line.className="quality-item";const label=document.createElement("span");label.textContent=name.replaceAll("_"," ");const value=document.createElement("strong");value.textContent=`${fmt(item.rows,0)} rows · ${fmt(item.columns,0)} cols · ${fmt(item.missing_cells,0)} missing`;line.append(label,value);datasetList.append(line)}
- const list=$("relationship-list");
- const notable=DATA.relationships.filter(item=>item.unmatched_count>0);
- const healthy=DATA.relationships.length-notable.length;
- const ok=document.createElement("div");ok.className="quality-item";ok.innerHTML=`<span>Checks with no unmatched records</span><strong style="color:var(--mint)">${healthy}</strong>`;list.append(ok);
- for(const check of notable){const line=document.createElement("div");line.className="quality-item";const label=document.createElement("span");label.textContent=check.name;const value=document.createElement("strong");value.textContent=`${fmt(check.unmatched_count,0)} unmatched`;line.append(label,value);list.append(line)}
- const d=DATA.diagnostics,diag=$("diagnostic-list");
- const facts=[
-  ["Eligible chase matches",d.eligible_chase_matches],
-  ["Target/winner checks",`${d.target_and_winner_consistency.consistent_matches}/${d.target_and_winner_consistency.matches_checked} consistent`],
-  ["Matches with rows after target",d.matches_with_delivery_rows_after_target],
-  ["Matches with rows after innings quota",d.matches_with_delivery_rows_after_innings_quota],
-  ["Excluded matches (reasons)",Object.values(d.excluded_matches_by_reason).reduce((a,b)=>a+b,0)]
- ];
- for(const [label,value] of facts){const line=document.createElement("div");line.className="quality-item";const a=document.createElement("span");a.textContent=label;const b=document.createElement("strong");b.textContent=typeof value==="number"?fmt(value,0):String(value);line.append(a,b);diag.append(line)}
- const files=[
-  ["Methodology report","phase2_methodology_report.md"],
-  ["Phase 1 exploration report","phase1_report.md"],
-  ["Top 10 batters (CSV)","phase2_batter_top10.csv"],
-  ["Top 10 bowlers (CSV)","phase2_bowler_top10.csv"],
-  ["Full batter leaderboard (CSV)","phase2_batter_leaderboard.csv"],
-  ["Full bowler leaderboard (CSV)","phase2_bowler_leaderboard.csv"]
- ];
- const box=$("file-list");
- for(const [label,href] of files){const link=document.createElement("a");link.className="file-link";link.href=href;link.textContent=label;const hint=document.createElement("span");hint.className="badge";hint.textContent=href.endsWith(".csv")?"CSV":"Open";link.append(hint);box.append(link)}
-}
 document.querySelectorAll(".nav button").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".nav button").forEach(item=>item.classList.toggle("active",item===button));document.querySelectorAll(".view").forEach(view=>view.classList.toggle("active",view.id===button.dataset.view))}));
-for(const id of ["batter-format","bowler-format","phase-format"])fillFormatSelect($(id));
-$("batter-format").addEventListener("change",()=>renderBatter());$("bowler-format").addEventListener("change",()=>renderBowler());$("phase-format").addEventListener("change",()=>renderPhase());
+for(const id of ["overview-format","batter-format","bowler-format"])fillFormatSelect($(id));
+$("overview-format").addEventListener("change",()=>renderOverview());
+$("batter-format").addEventListener("change",()=>renderBatter());$("bowler-format").addEventListener("change",()=>renderBowler());
 $("batter-search").addEventListener("input",()=>renderBatter());$("bowler-search").addEventListener("input",()=>renderBowler());
-renderKpis();
-renderBars("batter-bars",DATA.global.batters_top10.slice(0,10),"player_name","reliability_adjusted_score");
-renderBars("bowler-bars",DATA.global.bowlers_top10.slice(0,10),"player_name","bowling_score","orange");
-renderScatter("batter-scatter",DATA.global.batters,"pressure_strike_rate","baseline_strike_rate",DATA.global.batters_top10);
-renderScatter("bowler-scatter",DATA.global.bowlers,"pressure_economy","baseline_economy",DATA.global.bowlers_top10,true);
-renderBatter();renderBowler();renderPhase();initPlayerExplorer();addQuality();
+renderOverview();renderBatter();renderBowler();initPlayerExplorer();
 </script>
 </body>
 </html>"""

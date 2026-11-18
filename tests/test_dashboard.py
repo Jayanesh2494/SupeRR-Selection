@@ -11,6 +11,26 @@ def test_dashboard_html_embeds_data_safely():
     assert "</script><script>alert(1)</script>" not in html
     assert "\\u003c/script\\u003e" in html
     assert "SupeRR Selector" in html
+    assert "color-scheme:light" in html
+    assert "--pink:#d81b60" in html
+    assert 'id="overview-format"' in html
+    assert "Data &amp; methodology" not in html
+    assert 'id="quality"' not in html
+    assert 'id="updated"' not in html
+
+
+def test_dashboard_has_analytics_navigation_and_player_trend_visuals():
+    html = build_dashboard_html({})
+
+    assert 'data-view="overview"' in html
+    assert 'data-view="batters"' in html
+    assert 'data-view="bowlers"' in html
+    assert 'data-view="players"' in html
+    assert "function renderSeasonChart(" in html
+    assert 'runsChart.id="player-runs-trend"' in html
+    assert 'wicketsChart.id="player-wickets-trend"' in html
+    assert "Generated " not in html
+    assert "addQuality()" not in html
 
 
 def test_dashboard_payload_contains_phase_splits_and_dataset_inventory():

@@ -8,7 +8,7 @@ Once the GitHub Pages workflow completes, the dashboard will be available at:
 
 **https://jayanesh2494.github.io/SupeRR-Selection/**
 
-The site is a static, self-contained dashboard. It supports player search and profiles, season and match records, pressure metrics, team contribution summaries, ranked leaderboards, and data-quality/methodology context.
+The site is a static, self-contained dashboard with a Rajasthan Royals-inspired light-pink theme. It features format-filtered overviews, pressure-performance charts, batter and bowler leaderboards, and player profiles with seasonal trend charts, team contributions, and match records.
 
 ## Competition results
 
@@ -78,13 +78,7 @@ python src/dashboard.py
 python -m pytest -q
 ```
 
-`python src/dashboard.py` regenerates the analysis deliverables and `reports/dashboard.html`. Copy the refreshed dashboard to `docs/index.html` before publishing:
-
-```powershell
-Copy-Item reports/dashboard.html docs/index.html -Force
-```
-
-The pre-generated `docs/index.html` is committed so GitHub Pages can publish without access to the private/local source CSVs.
+`python src/dashboard.py` regenerates the analysis deliverables, `reports/dashboard.html`, and the deployable `docs/index.html`. The pre-generated `docs/index.html` is committed so GitHub Pages can publish without access to the private/local source CSVs.
 
 ## Method at a glance
 
