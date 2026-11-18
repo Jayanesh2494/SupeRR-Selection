@@ -1,0 +1,10 @@
+*.csv text eol=lf
+*.html text eol=lf
+*.ipynb text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.docx binary
+*.pdf binary
