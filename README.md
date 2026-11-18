@@ -4,11 +4,29 @@
 
 ## Live dashboard
 
-Once the GitHub Pages workflow completes, the dashboard will be available at:
+The live dashboard is available at:
 
 **https://jayanesh2494.github.io/SupeRR-Selection/**
 
-The site is a static, self-contained dashboard with a Rajasthan Royals-inspired light-pink theme. It features format-filtered overviews, pressure-performance charts, batter and bowler leaderboards, and player profiles with seasonal trend charts, team contributions, and match records.
+The static dashboard has a Rajasthan Royals-inspired light-pink theme, format filters, overview and comparison charts, batter and bowler leaderboards, and searchable player profiles with career, season, pressure, team-contribution, and match-record statistics.
+
+### Dashboard screenshots
+
+**Overview**
+
+![Dashboard overview with format-filtered performance analytics](docs/images/dashboard-overview.png)
+
+**Batter leaderboard**
+
+![Batter leaderboard and pressure-performance metrics](docs/images/dashboard-batters.png)
+
+**Bowler leaderboard**
+
+![Bowler leaderboard and pressure bowling metrics](docs/images/dashboard-bowlers.png)
+
+**Player profile**
+
+![Player profile with career, pressure, and match analytics](docs/images/dashboard-player-profile.png)
 
 ## Competition results
 
@@ -25,7 +43,7 @@ The site is a static, self-contained dashboard with a Rajasthan Royals-inspired 
 | 9 | Namboori Tilak Varma | 9 | Washington Sundar |
 | 10 | Sherfane Rutherford | 10 | Haris Rauf |
 
-The methodology, qualifications, player IDs, confidence intervals, and full tables are in [`reports/competition_submission.pdf`](reports/competition_submission.pdf) and [`reports/competition_submission.md`](reports/competition_submission.md). Machine-readable top tens and full eligible leaderboards are under [`reports/`](reports/).
+The methodology, qualifications, player IDs, confidence intervals, and full tables are included in the local submission package under `reports/`. Generated reports and ranking CSVs are intentionally excluded from Git; see the reproduction steps below to regenerate them.
 
 ## Repository layout
 
@@ -35,9 +53,10 @@ The methodology, qualifications, player IDs, confidence intervals, and full tabl
 ├── data/                    # Local-only source CSVs (not committed)
 ├── docs/                    # GitHub Pages site (index.html)
 ├── notebooks/               # Reproducible exploration and analysis notebooks
-├── reports/                 # Methodology, validation, rankings, and deliverables
+├── reports/                 # Local-only generated reports and rankings (gitignored)
 ├── src/                     # Data preparation, validation, analysis, dashboard code
 ├── tests/                   # Automated regression tests
+├── docs/images/             # Dashboard screenshots
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -47,7 +66,7 @@ The methodology, qualifications, player IDs, confidence intervals, and full tabl
 
 The six supplied source CSVs are intentionally excluded from Git. Their redistribution rights have not been established, and they include a large ball-by-ball file. Put the files in the local `data/` directory to run the analysis. The deployed dashboard and generated reports contain derived player statistics and profiles; publishing this repository makes those outputs publicly viewable.
 
-The analysis does not alter source files. It reports incomplete mappings and data anomalies rather than silently inventing or correcting records.
+Generated submission documents, reports, and ranking CSVs in `reports/` are retained locally and ignored by Git. Screenshots in `docs/images/` are included in the repository so the README and submission package can show the live dashboard. The analysis does not alter source files. It reports incomplete mappings and data anomalies rather than silently inventing or correcting records.
 
 ## Reproduce locally
 
@@ -78,7 +97,7 @@ python src/dashboard.py
 python -m pytest -q
 ```
 
-`python src/dashboard.py` regenerates the analysis deliverables, `reports/dashboard.html`, and the deployable `docs/index.html`. The pre-generated `docs/index.html` is committed so GitHub Pages can publish without access to the private/local source CSVs.
+`python src/dashboard.py` regenerates the local analysis deliverables, `reports/dashboard.html`, and the deployable `docs/index.html`. The pre-generated `docs/index.html` is committed so GitHub Pages can publish without access to the private/local source CSVs.
 
 ## Method at a glance
 
@@ -89,11 +108,11 @@ python -m pytest -q
 - Applies pre-set sample eligibility and exposure shrinkage; rates bowlers on economy and credited-wicket improvement.
 - Reports match consistency and bootstrap intervals for top-ten players.
 
-See the methodology report for exact formulas, eligibility thresholds, diagnostics, and limitations. The ranking is descriptive and dependent on the stated pressure definition; it is not a forecast or causal claim.
+Exact formulas, eligibility thresholds, diagnostics, and limitations are documented in the local submission package. The ranking is descriptive and dependent on the stated pressure definition; it is not a forecast or causal claim.
 
 ## Automated checks and deployment
 
-GitHub Actions runs the test suite and deploys `docs/` to GitHub Pages when code is pushed to `main`. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** if GitHub requires an initial Pages configuration. The Pages URL above becomes active after the first successful deployment.
+GitHub Actions runs the test suite and deploys `docs/` to GitHub Pages when code is pushed to `main`. The Pages URL above hosts the dashboard; submission reports remain local and are not published as repository files.
 
 ## License and data rights
 

@@ -31,11 +31,11 @@ htmlcov/
 .env.*
 !.env.example
 
+# Generated reports and rankings are retained locally, not committed.
+/reports/
+
 # OS metadata and temporary output.
 .DS_Store
 Thumbs.db
 *.tmp
 *.log
-
-# Accidental duplicate report copy.
-/reports/competition_submission - Copy.docx
